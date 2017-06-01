@@ -14,13 +14,30 @@ import android.view.MenuItem
 import com.app.afeng.afengapp.base.BaseActivity
 import com.app.afeng.afengapp.ui.music.MusicDetails
 import kotlinx.android.synthetic.main.content_main.*
+import me.yokeyword.fragmentation.SupportFragment
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    val FIRST: Int = 0
+    val SECOND: Int = 1
+    val THIRD: Int = 2
+    val FOURTH: Int = 3
+
+    var mFragments = mutableListOf<SupportFragment>()  //可变列表
+
     /**
      * 初始化组件
      */
-    override fun initView() {
+    override fun initView(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            mFragments.add(FIRST, MusicDetails.newInstance())
+            loadMultipleRootFragment(R.id.contentContainer, FIRST, mFragments[FIRST])
+        } else {
+            mFragments.set(FIRST, findFragment(MusicDetails().javaClass))
+        }
+
+
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
@@ -54,7 +71,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun getLayout(): Int {
         return R.layout.activity_main
     }
-
 
 
     override fun onBackPressedSupport() {

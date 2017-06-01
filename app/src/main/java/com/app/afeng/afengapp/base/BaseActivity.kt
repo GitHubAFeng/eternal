@@ -17,7 +17,7 @@ abstract class BaseActivity : SupportActivity() {
         setContentView(getLayout())
 
         mContext = this
-        initView()
+        initView(savedInstanceState)
 
     }
 
@@ -30,7 +30,7 @@ abstract class BaseActivity : SupportActivity() {
     /**
      * 初始化组件
      */
-    protected abstract fun initView()
+    protected abstract fun initView(savedInstanceState: Bundle?)
 
 
 }
