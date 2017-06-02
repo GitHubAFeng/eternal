@@ -9,33 +9,61 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 
 import android.support.v7.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
 import com.app.afeng.afengapp.base.BaseActivity
 import com.app.afeng.afengapp.ui.music.MusicDetails
+import com.app.afeng.afengapp.ui.music.MusicFragment
+import com.app.afeng.afengapp.ui.mv.MvFragment
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.activity_main.*
+
 import me.yokeyword.fragmentation.SupportFragment
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+import android.os.Build
+import android.animation.Animator
+import android.view.*
+import com.app.afeng.afengapp.tools.Utils
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    val FIRST: Int = 0
-    val SECOND: Int = 1
-    val THIRD: Int = 2
+
+    val Music: Int = R.id.tab_music
+    val MV: Int = R.id.tab_mv
+    val MU: Int = 2
     val FOURTH: Int = 3
 
-    var mFragments = mutableListOf<SupportFragment>()  //可变列表
+    val MUDetalis: Int = 9
+
+
+    var mFragmentsDict = mutableMapOf<Int, SupportFragment>()
 
     /**
      * 初始化组件
      */
     override fun initView(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            mFragments.add(FIRST, MusicDetails.newInstance())
-            loadMultipleRootFragment(R.id.contentContainer, FIRST, mFragments[FIRST])
+
+            mFragmentsDict[Music] = MusicFragment.newInstance()
+            mFragmentsDict[MV] = MvFragment.newInstance()
+
+
+            mFragmentsDict[MUDetalis] = MusicDetails.newInstance()
+
+
+            //装载fragment，所有的都要放进来
+            loadMultipleRootFragment(R.id.contentContainer, 0, mFragmentsDict[Music], mFragmentsDict[MV])
+
         } else {
-            mFragments.set(FIRST, findFragment(MusicDetails().javaClass))
+            mFragmentsDict[Music] = findFragment(MusicFragment().javaClass)
+            mFragmentsDict[MV] = findFragment(MvFragment().javaClass)
+
+            mFragmentsDict[MUDetalis] = findFragment(MusicDetails().javaClass)
+
         }
+
+
+        setupview()
 
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
@@ -58,10 +86,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         bottomBar.setOnTabSelectListener({ v ->
-            when (v) {
-                R.id.tab_favorites -> toast("tab_favorites")
-                else -> toast("else")
-            }
+
+            showHideFragment(mFragmentsDict[v], mFragmentsDict[bottomBar.currentTabId])
+
+
         })
     }
 
@@ -106,7 +134,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             R.id.nav_gallery -> {
 
-                start(MusicDetails())
 
             }
             R.id.nav_slideshow -> {
@@ -127,4 +154,45 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
+
+
+    fun setupview() {
+        // 1. 状态栏侵入
+        var adjustStatusHeight = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            adjustStatusHeight = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            } else {
+                window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
+        }
+
+        // 2. 状态栏占位View的高度调整
+        val brand = Build.BRAND
+        if (brand.contains("Xiaomi")) {
+            Utils.setXiaomiDarkMode(this)
+        } else if (brand.contains("Meizu")) {
+            Utils.setMeizuDarkMode(this)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val decor = window.decorView
+            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            adjustStatusHeight = false
+        }
+        if (adjustStatusHeight) {
+            adjustStatusBarHeight() // 调整状态栏高度
+        }
+    }
+
+    /**
+     * 调整沉浸状态栏
+     */
+    fun adjustStatusBarHeight() {
+        val statusBarHeight: Int = Utils.getStatusBarHeight(this)
+        val lp: ViewGroup.LayoutParams = positionView.layoutParams
+        lp.height = statusBarHeight
+        positionView.layoutParams = lp
+    }
+
+
 }

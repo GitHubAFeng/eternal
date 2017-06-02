@@ -4,7 +4,13 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="音乐"
+        android:text="哈哈哈哈"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:text="按我"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

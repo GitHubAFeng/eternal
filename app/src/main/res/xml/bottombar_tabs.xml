@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tabs>
     <tab
-        id="@+id/tab_recents"
+        id="@+id/tab_music"
         icon="@mipmap/ic_recents"
         title="Recents"
         barColorWhenSelected="@color/colorAccent" />
     <tab
-        id="@+id/tab_favorites"
+        id="@+id/tab_mv"
         icon="@mipmap/ic_favorites"
         title="Favorites"
         barColorWhenSelected="#5D4037" />
@@ -21,7 +21,7 @@
         title="Friends"
         barColorWhenSelected="#FF5252" />
     <tab
-        id="@+id/tab_food"
+        id="@+id/tab_mudetalis"
         icon="@mipmap/ic_restaurants"
         title="Food"
         barColorWhenSelected="#FF9800" />
